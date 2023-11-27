@@ -1,5 +1,10 @@
-import 'package:app0/Controllers/task_controllers.dart';
+import 'dart:io';
+
 import 'package:app0/models/task.dart';
+import 'package:flutter/material.dart';
+import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:app0/Controllers/user_controller.dart';
+import 'package:app0/Controllers/task_controllers.dart';
 import 'package:app0/services/notificaion_services.dart';
 import 'package:app0/services/theme_services.dart';
 import 'package:app0/ui/add_task_bar.dart';
@@ -7,12 +12,12 @@ import 'package:app0/ui/theme.dart';
 import 'package:app0/ui/widgets/button.dart';
 import 'package:app0/ui/widgets/task_tile.dart';
 import 'package:date_picker_timeline/date_picker_timeline.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:intl/src/intl/date_format.dart';
+import 'package:app0/ui/signin.dart';
+import 'package:app0/ui/signup.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -25,12 +30,62 @@ class _HomePageState extends State<HomePage> {
   DateTime _selectedDate = DateTime.now();
   final _taskController = Get.put(TaskController());
   var notifyHelper;
+  String? userPin;
+
   @override
   void initState() {
     super.initState();
     notifyHelper = NotifyHelper();
     notifyHelper.initializeNotification();
     notifyHelper.requestIOSPermissions();
+    _checkUserPin();
+  }
+
+  _checkUserPin() async {
+    userPin = await UserController.getUserPin();
+    if (userPin == null) {
+      // Mã PIN chưa được đặt, chuyển đến trang đăng ký
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => RegisterScreen()));
+    } else {
+      _requestPin();
+    }
+  }
+
+  _requestPin() {
+    // Hiển thị màn hình nhập mã PIN ở đây
+    // Để đơn giản, ta sẽ sử dụng showDialog để nhập mã PIN
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Nhập mã PIN'),
+        content: PinCodeTextField(
+          appContext: context,
+          length: 4,
+          obscureText: true,
+          animationType: AnimationType.fade,
+          pinTheme: PinTheme(
+            shape: PinCodeFieldShape.box,
+            borderRadius: BorderRadius.circular(5),
+            fieldHeight: 50,
+            fieldWidth: 40,
+            activeFillColor: Colors.white,
+          ),
+          onChanged: (value) {
+            // Xử lý khi giá trị thay đổi (mã PIN)
+          },
+          onCompleted: (value) {
+            // Xử lý khi đã nhập đủ độ dài mã PIN
+            if (value == userPin) {
+              // Mã PIN đúng, tiếp tục hiển thị nội dung của HomePage
+              Navigator.pop(context); // Đóng hộp thoại
+            } else {
+              exit(0);
+            }
+          },
+        ),
+      ),
+    );
   }
 
   @override
