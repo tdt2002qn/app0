@@ -25,14 +25,15 @@ class _AddTaskPageState extends State<AddTaskPage> {
   String _startTime = DateFormat("hh:mm a").format(DateTime.now()).toString();
   int _selectedRemind = 5;
   List<int> remindList = [
+    0,
     5,
     10,
     15,
     20,
   ];
 
-  String _selectedRepeat = "None";
-  List<String> RepeadList = ["None", "Daily", "Weekly", "Monthly"];
+  String _selectedRepeat = "Không";
+  List<String> RepeadList = ["Không", "Hằng ngày", "Hằng tuần", "Hằng tháng"];
 
   int _selectedColor = 0;
 
@@ -47,25 +48,24 @@ class _AddTaskPageState extends State<AddTaskPage> {
               child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Add Task", style: headingStyle),
+              Text("Thêm công việc mới", style: headingStyle),
               MyInputField(
-                title: "Title",
-                hint: "Nhap vao day Title",
+                title: "Công việc",
+                hint: "Nhập vào đây ",
                 controller: _titleController,
               ),
               MyInputField(
-                title: "Note",
-                hint: "Nhap vao day note",
+                title: "Ghi chú",
+                hint: "Nhập vào đây ",
                 controller: _noteController,
               ),
               MyInputField(
-                title: "Date",
+                title: "Ngày",
                 hint: DateFormat.yMd().format(_selectedDate),
                 widget: IconButton(
                     icon: Icon(Icons.calendar_today_outlined,
                         color: Colors.grey[500]),
                     onPressed: () {
-                      print("hi");
                       _getDateFromUser();
                     }),
               ),
@@ -73,7 +73,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                 children: [
                   Expanded(
                     child: MyInputField(
-                      title: "Start Date",
+                      title: "Bắt đầu",
                       hint: _startTime,
                       widget: IconButton(
                         onPressed: () {
@@ -93,7 +93,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                   ),
                   Expanded(
                     child: MyInputField(
-                      title: "End Date",
+                      title: "Kết thúc",
                       hint: _endTime,
                       widget: IconButton(
                         onPressed: () {
@@ -111,11 +111,13 @@ class _AddTaskPageState extends State<AddTaskPage> {
                 ],
               ),
               MyInputField(
-                title: "Remind",
-                hint: "$_selectedRemind minutes early",
+                title: "Nhắc nhở",
+                hint: " sớm hơn $_selectedRemind phút",
                 widget: DropdownButton(
                   icon: Icon(Icons.keyboard_arrow_down,
-                      color: Get.isDarkMode ? Colors.white : Colors.black),
+                      color: Get.isDarkMode
+                          ? const Color.fromARGB(255, 253, 202, 202)
+                          : Colors.black),
                   iconSize: 32,
                   elevation: 4,
                   style: subTitleStyle,
@@ -136,7 +138,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                 ),
               ),
               MyInputField(
-                title: "Repead",
+                title: "Lặp lại",
                 hint: "$_selectedRepeat ",
                 widget: DropdownButton(
                   icon: Icon(Icons.keyboard_arrow_down,
@@ -158,7 +160,8 @@ class _AddTaskPageState extends State<AddTaskPage> {
                       value: value,
                       child: Text(
                         value!,
-                        style: TextStyle(color: Colors.red),
+                        style: TextStyle(
+                            color: const Color.fromARGB(255, 215, 178, 190)),
                       ),
                     );
                   }).toList(),
@@ -172,7 +175,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   _colorPallete(),
-                  MyButton(lable: "Create Task", onTap: () => _validateDate())
+                  MyButton(lable: "Xong", onTap: () => _validateDate())
                 ],
               )
             ],
@@ -240,7 +243,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Color",
+          "Màu sắc",
           style: titleStyle,
         ),
         SizedBox(

@@ -1,5 +1,6 @@
 import 'package:app0/Controllers/task_controllers.dart';
 import 'package:app0/models/task.dart';
+import 'package:app0/services/notificaion_services.dart';
 import 'package:app0/services/theme_services.dart';
 import 'package:app0/ui/add_task_bar.dart';
 import 'package:app0/ui/theme.dart';
@@ -11,6 +12,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:intl/src/intl/date_format.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -22,9 +24,17 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   DateTime _selectedDate = DateTime.now();
   final _taskController = Get.put(TaskController());
+  var notifyHelper;
+  @override
+  void initState() {
+    super.initState();
+    notifyHelper = NotifyHelper();
+    notifyHelper.initializeNotification();
+    notifyHelper.requestIOSPermissions();
+  }
+
   @override
   Widget build(BuildContext context) {
-    print("build method called");
     return Scaffold(
       appBar: _appBar(),
       backgroundColor: context.theme.colorScheme.background,
@@ -48,8 +58,15 @@ class _HomePageState extends State<HomePage> {
             itemCount: _taskController.taskList.length,
             itemBuilder: (_, index) {
               Task task = _taskController.taskList[index];
-              // print(task.toJson());
-              if (task.repeat == 'Daily') {
+              print(task.toJson());
+              if (task.repeat == 'Hằng ngày') {
+                DateTime date =
+                    DateFormat.Hm().parse(task.startTime.toString());
+                var myTime = DateFormat("HH:mm").format(date);
+                notifyHelper.scheduledNotification(
+                    int.parse(myTime.toString().split(":")[0]),
+                    int.parse(myTime.toString().split(":")[1]),
+                    task);
                 return AnimationConfiguration.staggeredList(
                     position: index,
                     child: SlideAnimation(
@@ -225,13 +242,13 @@ class _HomePageState extends State<HomePage> {
                 style: subHeadingStyle,
               ),
               Text(
-                'Today',
+                'Hôm nay',
                 style: headingStyle,
               )
             ]),
           ),
           MyButton(
-              lable: '+ Add',
+              lable: 'Thêm',
               onTap: () async {
                 await Get.to(() => AddTaskPage());
                 _taskController.getTasks();
@@ -248,6 +265,10 @@ class _HomePageState extends State<HomePage> {
       leading: GestureDetector(
         onTap: () {
           ThemeService().switchTheme();
+          notifyHelper.displayNotification(
+              title: "Thay đổi chế độ giao diện",
+              body: Get.isDarkMode ? "Chế độ tối" : "Chế độ sáng");
+          //notifyHelper.scheduledNotification();
         },
         child: Icon(
           Get.isDarkMode ? Icons.wb_sunny_sharp : Icons.nightlight_sharp,

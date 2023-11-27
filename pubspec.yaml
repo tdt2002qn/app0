@@ -38,12 +38,13 @@ dependencies:
   get_storage: 
   get: 
   intl:
-  flutter_local_notifications: 
+  flutter_local_notifications: ^9.1.15
   google_fonts:
   date_picker_timeline:
   sqflite:
   flutter_staggered_animations:
-  flutter_native_timezone:
+  # flutter_native_timezone:
+  flutter_timezone:
 dev_dependencies:
   flutter_test:
     sdk: flutter
