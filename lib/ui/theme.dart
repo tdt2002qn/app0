@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 const Color bluishClr = Color.fromARGB(187, 255, 210, 115);
 const Color browmClr = Color.fromARGB(186, 199, 79, 229);
 const Color yellowClr = Color.fromARGB(186, 254, 197, 230);
-const Color pinkClr = Colors.fromARGB(186, 191, 174, 227);
+const Color pinkClr = Color.fromARGB(187, 191, 174, 227);
 const primaryClr = bluishClr;
 const darkGreyClr = Color.fromARGB(255, 66, 66, 66);
 
@@ -37,7 +37,7 @@ TextStyle get subHeadingStyle {
 
 TextStyle get headingStyle {
   return GoogleFonts.lato(
-      textStyle: TextStyle(fontSize: 28, fontWeight: FontWeight.bold));
+      textStyle: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold));
 }
 
 TextStyle get titleStyle {
