@@ -3,6 +3,7 @@ import 'package:app0/ui/theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 
 class TaskTile extends StatelessWidget {
   final Task? task;
@@ -48,7 +49,7 @@ class TaskTile extends StatelessWidget {
                     ),
                     SizedBox(width: 4),
                     Text(
-                      "${task!.startTime} - ${task!.endTime}",
+                      _calculateUpdatedTimeRange(task!),
                       style: GoogleFonts.lato(
                         textStyle:
                             TextStyle(fontSize: 13, color: Colors.grey[100]),
@@ -87,6 +88,40 @@ class TaskTile extends StatelessWidget {
         ]),
       ),
     );
+  }
+
+  String _calculateUpdatedTimeRange(Task task) {
+    DateTime startDateTime;
+
+    if (task.startTime != null) {
+      try {
+        // Xác định định dạng thời gian thực tế của chuỗi
+        String timeFormat =
+            task.startTime!.contains('AM') || task.startTime!.contains('PM')
+                ? "h:mm a"
+                : "HH:mm";
+
+        // Sử dụng định dạng thời gian khi chuyển đổi
+        startDateTime = DateFormat(timeFormat).parse(task.startTime!);
+        print('aaaaa');
+
+        // Xử lý trường hợp remind là null
+        int remindMinutes = task.remind ?? 0;
+
+        // Cộng thêm số phút từ trường remind cho startTime
+        startDateTime = startDateTime.add(Duration(minutes: remindMinutes));
+
+        // Định dạng lại thời gian và trả về dưới dạng chuỗi
+        return DateFormat("h:mm a").format(startDateTime) +
+            " - ${task.endTime}";
+      } catch (e) {
+        // In ra thông điệp lỗi
+        print('Error during time conversion: $e');
+      }
+    }
+
+    // Trong trường hợp lỗi hoặc startTime là null, trả về chuỗi rỗng hoặc giá trị mặc định khác
+    return "111";
   }
 
   _getBGClr(int no) {

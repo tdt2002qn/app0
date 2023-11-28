@@ -26,12 +26,10 @@ class _AddTaskPageState extends State<AddTaskPage> {
       DateTime.now(); // Ngày và giờ bắt đầu/kết thúc mặc định
   String _endTime = "9:30 PM";
   String _startTime = DateFormat("hh:mm a").format(DateTime.now()).toString();
-  int _selectedRemind = 0;
-  List<int> remindList = [
-    0,
-  ];
+  int _selectedRemind = 1;
+  List<int> remindList = [1, 5, 10, 30, 60];
 
-  String _selectedRepeat = "Không";
+  String _selectedRepeat = "Hằng ngày";
   List<String> RepeadList = [
     "Hằng ngày",
     "Hằng tuần",
@@ -238,18 +236,44 @@ class _AddTaskPageState extends State<AddTaskPage> {
 
   // Hàm thêm công việc vào cơ sở dữ liệu
   _addTaskToDb() async {
+    // Chuyển đổi _startTime từ chuỗi sang đối tượng TimeOfDay
+    TimeOfDay startTime =
+        TimeOfDay.fromDateTime(DateFormat("H:m").parse(_startTime));
+    // Chuyển đổi _selectedRemind thành Duration để sử dụng trong phép trừ
+    Duration remindDuration = Duration(minutes: _selectedRemind);
+
+    // Chuyển đổi _selectedDate và startTime thành DateTime
+    DateTime startDateTime = DateTime(
+      _selectedDate.year,
+      _selectedDate.month,
+      _selectedDate.day,
+      startTime.hour,
+      startTime.minute,
+    );
+
+    // Trừ đi số phút nhắc nhở
+    DateTime updatedStartTime = startDateTime.subtract(remindDuration);
+
+    // Chuyển đổi lại DateTime thành TimeOfDay
+    TimeOfDay formattedStartTime = TimeOfDay.fromDateTime(updatedStartTime);
+
+    // Chuyển đổi lại TimeOfDay thành chuỗi
+    String formattedStartTimeString = formattedStartTime.format(context);
+
     int value = await _taskController.addTask(
-        task: Task(
-      note: _noteController.text,
-      title: _titleController.text,
-      date: DateFormat.yMd().format(_selectedDate),
-      startTime: _startTime,
-      endTime: _endTime,
-      remind: _selectedRemind,
-      repeat: _selectedRepeat,
-      color: _selectedColor,
-      isCompleted: 0,
-    ));
+      task: Task(
+        note: _noteController.text,
+        title: _titleController.text,
+        date: DateFormat.yMd().format(_selectedDate),
+        startTime:
+            formattedStartTimeString, // Sử dụng thời gian đã được cập nhật
+        endTime: _endTime,
+        remind: _selectedRemind,
+        repeat: _selectedRepeat,
+        color: _selectedColor,
+        isCompleted: 0,
+      ),
+    );
     print("My id: " + "$value");
   }
 
