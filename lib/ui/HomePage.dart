@@ -63,10 +63,6 @@ class _HomePageState extends State<HomePage> {
         children: [
           // Màn hình chính của ứng dụng (phía sau hộp thoại)
           Scaffold(
-            appBar: AppBar(
-              title:
-                  Text('Màn hình chính'), // Thêm tiêu đề hoặc nội dung phù hợp
-            ),
             body: Container(
                 // Đặt nội dung chính của ứng dụng ở đây
                 ),
@@ -75,6 +71,7 @@ class _HomePageState extends State<HomePage> {
           Center(
             child: AlertDialog(
               backgroundColor: Colors.transparent, // Đặt màu nền trong suốt
+              title: Text('Nhập mã PIN'), // Chữ Đăng nhập ở đây
               content: Container(
                 height: MediaQuery.of(context).size.height,
                 width: MediaQuery.of(context).size.width,
