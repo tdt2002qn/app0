@@ -157,10 +157,7 @@ class _HomePageState extends State<HomePage> {
               Task task = _taskController.taskList[index];
               print(task.toJson());
               // Kiểm tra và lập lịch thông báo
-              if (task.repeat == 'Hằng ngày' ||
-                  task.repeat == 'Hằng tuần' ||
-                  task.repeat == 'Hằng tháng' ||
-                  task.repeat == 'Không') {
+              if (task.repeat == 'Hằng ngày') {
                 DateTime date =
                     DateFormat.Hm().parse(task.startTime.toString());
                 var myTime = DateFormat("HH:mm").format(date);

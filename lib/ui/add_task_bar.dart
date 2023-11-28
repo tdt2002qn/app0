@@ -32,7 +32,12 @@ class _AddTaskPageState extends State<AddTaskPage> {
   ];
 
   String _selectedRepeat = "Không";
-  List<String> RepeadList = ["Không", "Hằng ngày", "Hằng tuần", "Hằng tháng"];
+  List<String> RepeadList = [
+    "Hằng ngày",
+    "Hằng tuần",
+    "Hằng tháng",
+    "Không",
+  ];
 
   int _selectedColor = 0;
 
