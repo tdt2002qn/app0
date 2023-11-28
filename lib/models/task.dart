@@ -1,3 +1,5 @@
+//Tạo các model Task trong database
+
 class Task {
   int? id;
   String? title;

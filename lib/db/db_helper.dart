@@ -2,6 +2,7 @@ import 'package:app0/models/task.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
+//Lơp db
 class DBHelper {
   static Database? _db;
   static final int _version = 1;
@@ -14,7 +15,6 @@ class DBHelper {
     }
     try {
       String _path = join(await getDatabasesPath(), 'tasks.db');
-      ;
 
       _db = await openDatabase(
         _path,
@@ -29,6 +29,7 @@ class DBHelper {
     }
   }
 
+//Tạo bảng task
   static void _createTasksTable(Database db) {
     db.execute(
       "CREATE TABLE $_tasksTableName("
@@ -41,29 +42,34 @@ class DBHelper {
     );
   }
 
+//Tạo bảng user
   static void _createUserTable(Database db) {
     db.execute(
       "CREATE TABLE $_userTableName("
       "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-      "pin STRING)",
+      "pin TEXT NOT NULL)", // Đặt kiểu dữ liệu của cột pin là TEXT
     );
   }
 
+//Thêm task vào db
   static Future<int> insert(Task? task) async {
     print("insert function called");
     return await _db?.insert(_tasksTableName, task!.toJson()) ?? 1;
   }
 
+//Lấy task từ db
   static Future<List<Map<String, dynamic>>> query() async {
     print("query function called");
     return await _db!.query(_tasksTableName);
   }
 
+//xóa task
   static delete(Task task) async {
     return await _db!
         .delete(_tasksTableName, where: 'id=?', whereArgs: [task.id]);
   }
 
+//Update task đã hoàn thành chưa
   static update(int id) async {
     return await _db!.rawUpdate('''
     UPDATE tasks
@@ -72,23 +78,24 @@ class DBHelper {
 ''', [1, id]);
   }
 
-  //User
-  // lib/db/db_helper.dart
-// Thêm phương thức sau vào DBHelper để lưu mã PIN mới vào cơ sở dữ liệu
+//Xóa user cũ và thêm user mới
   static Future<void> saveUserPin(String pin) async {
-    await _db?.delete(_userTableName); // Xóa bản ghi người dùng hiện tại
+    await _db?.delete(_userTableName);
     await _db?.insert(
-        _userTableName, {'pin': pin}); // Thêm bản ghi mới với mã PIN mới
+      _userTableName,
+      {'pin': pin},
+    );
     print(pin);
   }
 
-  // lib/db/db_helper.dart
-// Thêm phương thức sau vào DBHelper để lấy mã PIN từ cơ sở dữ liệu
+//Lấy mã pin user
   static Future<String?> getUserPin() async {
     final List<Map<String, dynamic>> maps = await _db!.query(_userTableName);
 
     if (maps.isNotEmpty) {
-      return maps.first['pin'].toString();
+      final get = maps.first['pin'].toString();
+      print('Get $get');
+      return get;
     } else {
       return null;
     }

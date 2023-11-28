@@ -14,6 +14,7 @@ class NotifyHelper {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin(); //
 
+  // Khởi tạo thông báo
   initializeNotification() async {
     _configureLocalTimezone();
     // this is for latest iOS settings
@@ -46,6 +47,8 @@ class NotifyHelper {
     var platformChannelSpecifics = new NotificationDetails(
         android: androidPlatformChannelSpecifics,
         iOS: iOSPlatformChannelSpecifics);
+
+    // Hiển thị thông báo
     await flutterLocalNotificationsPlugin.show(
       0,
       title,
@@ -55,6 +58,7 @@ class NotifyHelper {
     );
   }
 
+  // Lên lịch thông báo
   scheduledNotification(int hour, int minutes, Task task) async {
     await flutterLocalNotificationsPlugin.zonedSchedule(
         task.id!.toInt(),
@@ -74,6 +78,7 @@ class NotifyHelper {
         payload: "${task.title}|" + "${task.note}|");
   }
 
+  // Chuyển đổi thời gian sang định dạng thời gian múi gi
   tz.TZDateTime _convertime(int hour, int minutes) {
     final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
     tz.TZDateTime scheduleDate =
@@ -84,12 +89,14 @@ class NotifyHelper {
     return scheduleDate;
   }
 
+  // Cấu hình múi giờ địa phương
   Future<void> _configureLocalTimezone() async {
     tz.initializeTimeZones();
     final String timeZone = await FlutterTimezone.getLocalTimezone();
     tz.setLocalLocation(tz.getLocation(timeZone));
   }
 
+  // Yêu cầu quyền truy cập thông báo trên iOS
   void requestIOSPermissions() {
     flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
@@ -101,14 +108,14 @@ class NotifyHelper {
         );
   }
 
+  // Xử lý khi người dùng chọn thông báo
   Future selectNotification(String? payload) async {
     if (payload != null) {
-      //selectedNotificationPayload = "The best";
-      //selectNotificationSubject.add(payload);
       print('notification payload: $payload');
     } else {
       print("Notification Done");
     }
+    // Mở trang NotifiedPage khi thông báo được chọn
     if (payload == "Thay đổi chế độ giao diện") {
       print("Không có gì");
     } else {
@@ -116,32 +123,9 @@ class NotifyHelper {
     }
   }
 
+  // Xử lý khi nhận thông báo khi ứng dụng đang chạy
   Future onDidReceiveLocalNotification(
       int? id, String? title, String? body, String? payload) async {
-    // display a dialog with the notification details, tap ok to go to another page
-    // showDialog(
-    //   //context: context,
-    //   builder: (BuildContext context) => CupertinoAlertDialog(
-    //     title: Text(title),
-    //     content: Text(body),
-    //     actions: [
-    //       CupertinoDialogAction(
-    //         isDefaultAction: true,
-    //         child: Text('Ok'),
-    //         onPressed: () async {
-    //           Navigator.of(context, rootNavigator: true).pop();
-    //           await Navigator.push(
-    //             context,
-    //             MaterialPageRoute(
-    //               builder: (context) => SecondScreen(payload),
-    //             ),
-    //           );
-    //         },
-    //       )
-    //     ],
-    //   ),
-    // );
-
     Get.dialog(Text("Welcom "));
   }
 }

@@ -17,19 +17,18 @@ class AddTaskPage extends StatefulWidget {
 }
 
 class _AddTaskPageState extends State<AddTaskPage> {
-  final TaskController _taskController = Get.put(TaskController());
-  final _titleController = TextEditingController();
-  final _noteController = TextEditingController();
-  DateTime _selectedDate = DateTime.now();
+  final TaskController _taskController =
+      Get.put(TaskController()); // Khởi tạo controller cho công việc
+  final _titleController =
+      TextEditingController(); // Controllers cho tiêu đề  ghi chú công việc
+  final _noteController = TextEditingController(); //ghi chú công việc
+  DateTime _selectedDate =
+      DateTime.now(); // Ngày và giờ bắt đầu/kết thúc mặc định
   String _endTime = "9:30 PM";
   String _startTime = DateFormat("hh:mm a").format(DateTime.now()).toString();
-  int _selectedRemind = 5;
+  int _selectedRemind = 0;
   List<int> remindList = [
     0,
-    5,
-    10,
-    15,
-    20,
   ];
 
   String _selectedRepeat = "Không";
@@ -49,16 +48,19 @@ class _AddTaskPageState extends State<AddTaskPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text("Thêm công việc mới", style: headingStyle),
+              // Ô nhập ghi chú công việc
               MyInputField(
                 title: "Công việc",
                 hint: "Nhập vào đây ",
                 controller: _titleController,
               ),
+
               MyInputField(
                 title: "Ghi chú",
                 hint: "Nhập vào đây ",
                 controller: _noteController,
               ),
+              // Ô chọn ngày
               MyInputField(
                 title: "Ngày",
                 hint: DateFormat.yMd().format(_selectedDate),
@@ -69,6 +71,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                       _getDateFromUser();
                     }),
               ),
+              // Ô nhập giờ bắt đầu và kết thúc
               Row(
                 children: [
                   Expanded(
@@ -110,14 +113,13 @@ class _AddTaskPageState extends State<AddTaskPage> {
                   )
                 ],
               ),
+              // Ô chọn nhắc nhở
               MyInputField(
                 title: "Nhắc nhở",
                 hint: " sớm hơn $_selectedRemind phút",
                 widget: DropdownButton(
                   icon: Icon(Icons.keyboard_arrow_down,
-                      color: Get.isDarkMode
-                          ? const Color.fromARGB(255, 253, 202, 202)
-                          : Colors.black),
+                      color: Get.isDarkMode ? Colors.white : Colors.black),
                   iconSize: 32,
                   elevation: 4,
                   style: subTitleStyle,
@@ -137,6 +139,8 @@ class _AddTaskPageState extends State<AddTaskPage> {
                   }).toList(),
                 ),
               ),
+
+              // Ô chọn lặp lại
               MyInputField(
                 title: "Lặp lại",
                 hint: "$_selectedRepeat ",
@@ -161,15 +165,18 @@ class _AddTaskPageState extends State<AddTaskPage> {
                       child: Text(
                         value!,
                         style: TextStyle(
-                            color: const Color.fromARGB(255, 215, 178, 190)),
+                            color:
+                                Get.isDarkMode ? Colors.white : Colors.black),
                       ),
                     );
                   }).toList(),
                 ),
               ),
+              // Khoảng cách giữa các ô nhập và nút
               SizedBox(
                 height: 18,
               ),
+              // Hàng chứa ô chọn màu sắc và nút "Xong"
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -183,6 +190,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
     );
   }
 
+  // Phần App Bar
   _appBar(BuildContext context) {
     return AppBar(
       elevation: 0,
@@ -208,6 +216,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
     );
   }
 
+  // Hàm kiểm tra và lưu công việc vào cơ sở dữ liệu
   _validateDate() {
     if (_titleController.text.isNotEmpty && _noteController.text.isNotEmpty) {
       //add to database
@@ -222,6 +231,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
     }
   }
 
+  // Hàm thêm công việc vào cơ sở dữ liệu
   _addTaskToDb() async {
     int value = await _taskController.addTask(
         task: Task(
@@ -238,6 +248,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
     print("My id: " + "$value");
   }
 
+  // Hàm hiển thị bảng màu sắc cho công việc
   _colorPallete() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -283,6 +294,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
     );
   }
 
+  // Hàm lấy ngày từ người dùng
   _getDateFromUser() async {
     DateTime? _pickedate = await showDatePicker(
       context: context,
@@ -301,6 +313,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
     }
   }
 
+// Hàm lấy thời gian từ người dùng
   _getTimeFromUser({required bool isStartTime}) async {
     var pickedTime = await _showTimePicker();
     String _formatedTime = pickedTime.format(context);
@@ -317,6 +330,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
     }
   }
 
+  // Hàm hiển thị bảng chọn thời gian
   _showTimePicker() {
     return showTimePicker(
       initialEntryMode: TimePickerEntryMode.input,

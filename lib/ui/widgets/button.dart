@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
 class MyButton extends StatelessWidget {
-  final String lable;
-  final Function()? onTap;
+  final String lable; // Text hiển thị trên nút
+  final Function()? onTap; // Hàm được gọi khi nút được nhấp
+
+  // Constructor nhận vào một chuỗi làm nội dung cho nút và một hàm để xử lý sự kiện nhấp
   const MyButton({Key? key, required this.lable, required this.onTap})
       : super(key: key);
 
@@ -19,7 +21,7 @@ class MyButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(15), color: primaryClr),
         child: Center(
           child: Text(
-            lable,
+            lable, // Hiển thị nội dung của nút
             style: TextStyle(
               color: Colors.white,
             ),

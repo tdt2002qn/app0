@@ -44,7 +44,7 @@ class _HomePageState extends State<HomePage> {
   _checkUserPin() async {
     userPin = await UserController.getUserPin();
     if (userPin == null) {
-      // Mã PIN chưa được đặt, chuyển đến trang đăng ký
+      // Mã PIN chưa được đặt, chuyển đến trang đăng ký(chưa fix được lỗi)
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => RegisterScreen()));
     } else {
@@ -54,36 +54,78 @@ class _HomePageState extends State<HomePage> {
 
   _requestPin() {
     // Hiển thị màn hình nhập mã PIN ở đây
-    // Để đơn giản, ta sẽ sử dụng showDialog để nhập mã PIN
+    // showDialog để nhập mã PIN
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Nhập mã PIN'),
-        content: PinCodeTextField(
-          appContext: context,
-          length: 4,
-          obscureText: true,
-          animationType: AnimationType.fade,
-          pinTheme: PinTheme(
-            shape: PinCodeFieldShape.box,
-            borderRadius: BorderRadius.circular(5),
-            fieldHeight: 50,
-            fieldWidth: 40,
-            activeFillColor: Colors.white,
+      barrierDismissible:
+          false, // Ngăn chặn việc đóng hộp thoại khi chạm ra ngoài
+      builder: (context) => Stack(
+        children: [
+          // Màn hình chính của ứng dụng (phía sau hộp thoại)
+          Scaffold(
+            appBar: AppBar(
+              title:
+                  Text('Màn hình chính'), // Thêm tiêu đề hoặc nội dung phù hợp
+            ),
+            body: Container(
+                // Đặt nội dung chính của ứng dụng ở đây
+                ),
           ),
-          onChanged: (value) {
-            // Xử lý khi giá trị thay đổi (mã PIN)
-          },
-          onCompleted: (value) {
-            // Xử lý khi đã nhập đủ độ dài mã PIN
-            if (value == userPin) {
-              // Mã PIN đúng, tiếp tục hiển thị nội dung của HomePage
-              Navigator.pop(context); // Đóng hộp thoại
-            } else {
-              exit(0);
-            }
-          },
-        ),
+          // Hộp thoại nhập mã PIN
+          Center(
+            child: AlertDialog(
+              backgroundColor: Colors.transparent, // Đặt màu nền trong suốt
+              content: Container(
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                color: Colors.transparent,
+                child: Center(
+                  child: PinCodeTextField(
+                    appContext: context,
+                    length: 4,
+                    obscureText: true,
+                    animationType: AnimationType.fade,
+                    pinTheme: PinTheme(
+                      shape: PinCodeFieldShape.box,
+                      borderRadius: BorderRadius.circular(5),
+                      fieldHeight: 50,
+                      fieldWidth: 40,
+                      activeFillColor: Colors.white,
+                    ),
+                    onChanged: (value) {
+                      // Xử lý khi giá trị thay đổi (mã PIN)
+                    },
+                    onCompleted: (value) {
+                      // Xử lý khi đã nhập đủ độ dài mã PIN
+                      if (value == userPin) {
+                        Navigator.pop(context); // Đóng hộp thoại
+                      } else {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text('Mã PIN Sai'),
+                            content: Text('Vui lòng kiểm tra lại mã PIN.'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop(); // Đóng hộp thoại
+                                  // Thoát ứng dụng
+                                  Navigator.of(context)
+                                      .popUntil((route) => exit(0));
+                                },
+                                child: Text('Thoát'),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -114,7 +156,11 @@ class _HomePageState extends State<HomePage> {
             itemBuilder: (_, index) {
               Task task = _taskController.taskList[index];
               print(task.toJson());
-              if (task.repeat == 'Hằng ngày') {
+              // Kiểm tra và lập lịch thông báo
+              if (task.repeat == 'Hằng ngày' ||
+                  task.repeat == 'Hằng tuần' ||
+                  task.repeat == 'Hằng tháng' ||
+                  task.repeat == 'Không') {
                 DateTime date =
                     DateFormat.Hm().parse(task.startTime.toString());
                 var myTime = DateFormat("HH:mm").format(date);
@@ -122,6 +168,8 @@ class _HomePageState extends State<HomePage> {
                     int.parse(myTime.toString().split(":")[0]),
                     int.parse(myTime.toString().split(":")[1]),
                     task);
+
+                // Sử dụng các hiệu ứng khi hiển thị danh sách công việc
                 return AnimationConfiguration.staggeredList(
                     position: index,
                     child: SlideAnimation(
@@ -138,6 +186,9 @@ class _HomePageState extends State<HomePage> {
                       )),
                     ));
               }
+
+              // Hiển thị công việc theo ngày được chọn
+
               if (task.date == DateFormat.yMd().format(_selectedDate)) {
                 return AnimationConfiguration.staggeredList(
                     position: index,
@@ -162,6 +213,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+//để hiển thị bottom sheet khi người dùng chạm vào một công việc.
   _showBottomSheet(BuildContext context, Task task) {
     Get.bottomSheet(
       Container(
@@ -222,6 +274,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+//để tạo và trả về widget của các nút trong bottom sheet.
   _bottomSheetButton({
     required String lable,
     required Function()? onTap,
@@ -257,6 +310,7 @@ class _HomePageState extends State<HomePage> {
         ));
   }
 
+// Phương thức để hiển thị thanh chọn ngày.
   _addDateBar() {
     return Container(
       margin: const EdgeInsets.only(top: 18, left: 18),
@@ -283,6 +337,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+//Phương thức để hiển thị thanh tiêu đề và nút thêm công việc
   _addTaskBar() {
     return Container(
       margin: const EdgeInsets.only(left: 20, right: 20, top: 10),
@@ -313,6 +368,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+//Phương thức để tạo thanh ứng dụng.
   _appBar() {
     return AppBar(
       elevation: 0,

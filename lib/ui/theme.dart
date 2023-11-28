@@ -9,6 +9,7 @@ const Color pinkClr = Color.fromARGB(187, 191, 174, 227);
 const primaryClr = bluishClr;
 const darkGreyClr = Color.fromARGB(255, 66, 66, 66);
 
+//Tao cac theme
 class Themes {
   static final light = ThemeData.light().copyWith(
     appBarTheme: const AppBarTheme(
@@ -53,5 +54,5 @@ TextStyle get subTitleStyle {
       textStyle: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w400,
-          color: Get.isDarkMode ? Colors.red[100] : Colors.red[700]));
+          color: Get.isDarkMode ? Colors.white : Colors.black));
 }
